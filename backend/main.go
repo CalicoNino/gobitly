@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalln("Error loading .env file")
 	}
@@ -21,6 +21,6 @@ func main() {
 	port := os.Getenv("POSTGRES_PORT")
 	sslmode := os.Getenv("POSTGRES_SSLMODE")
 
-	datastore.Setup(ip, username, password, dbname, port, sslmode)
+	datastore.Init(ip, username, password, dbname, port, sslmode)
 	server.SetupAndListen()
 }
