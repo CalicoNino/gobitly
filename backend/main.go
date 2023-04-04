@@ -1,17 +1,14 @@
 package main
 
 import (
-	"gobitly/datastore"
-	"log"
+	"gobitly/server"
 
-	"github.com/joho/godotenv"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalln("Error loading .env file")
-	}
+	r := gin.Default()
+	r.GET("/ping", server.GetGobitly)
+	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
-	datastore.Init()
 }

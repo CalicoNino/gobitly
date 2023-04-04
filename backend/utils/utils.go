@@ -15,6 +15,6 @@ func RandomURL(size int) string {
 	return string(str)
 }
 
-func StringCompressor(s string) string {
+// func StringCompressor(s string) string {
 
-}
+// }

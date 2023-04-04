@@ -22,7 +22,7 @@ const uri = "mongodb://root:pass12345@172.18.0.2:27017/?retryWrites=true&w=major
 const dbname = "gobitly"
 const colname = "redirect"
 
-func Init() {
+func Connect() {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 
