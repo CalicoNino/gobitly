@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gobitly/configs"
 	"gobitly/models"
-	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -52,14 +51,13 @@ func InsertGobitly(gobitly models.Gobitly) (*mongo.InsertOneResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Inserted 1 gobitly with id: ", inserted.InsertedID)
 	return inserted, nil
 }
 
 func UpdateGobitlyClick(gobitlyId string) (*mongo.UpdateResult, error) {
 	id, err := primitive.ObjectIDFromHex(gobitlyId)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	filter := bson.M{"_id": id}
@@ -69,7 +67,6 @@ func UpdateGobitlyClick(gobitlyId string) (*mongo.UpdateResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("modified count: ", result.ModifiedCount)
 	return result, nil
 }
 
@@ -85,14 +82,30 @@ func DeleteGobitly(gobitlyId string) (*mongo.DeleteResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("deleted count: ", result.DeletedCount)
 	return result, nil
+}
+
+func GetGobitly(gobitlyId string) (*models.Gobitly, error) {
+	id, err := primitive.ObjectIDFromHex(gobitlyId)
+	var gobitly *models.Gobitly
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": id}
+
+	err = collection.FindOne(context.Background(), filter).Decode(&gobitly)
+	if err != nil {
+		return nil, err
+	}
+
+	return gobitly, nil
 }
 
 func GetAllGobitlies() ([]bson.M, error) {
 	cursor, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer cursor.Close(context.Background())
 

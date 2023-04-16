@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DeleteGobitly(c *gin.Context) {
+func GetGobitly(c *gin.Context) {
 	var gobitlyId models.GobitlyIdInput
 
 	//validate the request body
@@ -22,7 +22,7 @@ func DeleteGobitly(c *gin.Context) {
 		return
 	}
 
-	result, err := db.DeleteGobitly(gobitlyId.ID)
+	result, err := db.GetGobitly(gobitlyId.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.GobitlyResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
 		return

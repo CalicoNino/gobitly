@@ -1,5 +1,5 @@
 package models
 
-type GobitlyDeleteInput struct {
+type GobitlyIdInput struct {
 	ID string `json:"id"`
 }
