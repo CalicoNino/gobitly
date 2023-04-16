@@ -35,7 +35,7 @@ func Connect() {
 
 	// Send a ping to confirm a successful connection
 	var result bson.M
-	if err = client.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
+	if err = client.Database("admin").RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Decode(&result); err != nil {
 		panic(err)
 	}
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
@@ -47,15 +47,16 @@ func Disconnect() {
 	}
 }
 
-func InsertGobitly(gobitly models.Gobitly) {
+func InsertGobitly(gobitly models.Gobitly) (*mongo.InsertOneResult, error) {
 	inserted, err := collection.InsertOne(context.Background(), gobitly)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	fmt.Println("Inserted 1 gobitly with id: ", inserted.InsertedID)
+	return inserted, nil
 }
 
-func UpdateGobitlyClick(gobitlyId string) {
+func UpdateGobitlyClick(gobitlyId string) (*mongo.UpdateResult, error) {
 	id, err := primitive.ObjectIDFromHex(gobitlyId)
 	if err != nil {
 		log.Fatal(err)
@@ -66,9 +67,10 @@ func UpdateGobitlyClick(gobitlyId string) {
 
 	result, err := collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	fmt.Println("modified count: ", result.ModifiedCount)
+	return result, nil
 }
 
 func DeleteGobitly(gobitlyId string) {
@@ -86,7 +88,7 @@ func DeleteGobitly(gobitlyId string) {
 	fmt.Println("deleted count: ", result.DeletedCount)
 }
 
-func GetAllGobitlies() []bson.M {
+func GetAllGobitlies() ([]bson.M, error) {
 	cursor, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		log.Fatal(err)
@@ -98,10 +100,10 @@ func GetAllGobitlies() []bson.M {
 	for cursor.Next(context.Background()) {
 		var gobitly bson.M
 		if err := cursor.Decode(&gobitly); err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		gobitlies = append(gobitlies, gobitly)
 	}
 
-	return gobitlies
+	return gobitlies, nil
 }
