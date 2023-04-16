@@ -15,6 +15,7 @@ func EnvMongoDB() string {
 	}
 	username := os.Getenv("MONGO_DB_USERNAME")
 	password := os.Getenv("MONGO_DB_PASSWORD")
-	uri := fmt.Sprintf("mongodb://%s:%s@172.18.0.2:27017/?retryWrites=true&w=majority", username, password)
+	ip := os.Getenv("MONGO_DB_IP")
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:27017/?retryWrites=true&w=majority", username, password, ip)
 	return uri
 }

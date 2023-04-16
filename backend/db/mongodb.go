@@ -73,19 +73,20 @@ func UpdateGobitlyClick(gobitlyId string) (*mongo.UpdateResult, error) {
 	return result, nil
 }
 
-func DeleteGobitly(gobitlyId string) {
+func DeleteGobitly(gobitlyId string) (*mongo.DeleteResult, error) {
 	id, err := primitive.ObjectIDFromHex(gobitlyId)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	filter := bson.M{"_id": id}
 
 	result, err := collection.DeleteOne(context.Background(), filter)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	fmt.Println("deleted count: ", result.DeletedCount)
+	return result, nil
 }
 
 func GetAllGobitlies() ([]bson.M, error) {

@@ -1,4 +1,4 @@
-package responses
+package models
 
 type GobitlyResponse struct {
 	Status  int                    `json:"status"`
