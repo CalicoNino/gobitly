@@ -1,8 +1,10 @@
-package datastore
+package db
 
 import (
 	"context"
 	"fmt"
+	"gobitly/configs"
+	"gobitly/models"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,14 +19,12 @@ var (
 	err        error
 )
 
-// Replace the placeholders with your credentials
-const uri = "mongodb://root:pass12345@172.18.0.2:27017/?retryWrites=true&w=majority"
 const dbname = "gobitly"
 const colname = "redirect"
 
 func Connect() {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI(configs.EnvMongoDB()).SetServerAPIOptions(serverAPI)
 
 	client, err = mongo.Connect(context.TODO(), opts)
 	if err != nil {
@@ -47,7 +47,7 @@ func Disconnect() {
 	}
 }
 
-func InsertGobitly(gobitly Gobitly) {
+func InsertGobitly(gobitly models.Gobitly) {
 	inserted, err := collection.InsertOne(context.Background(), gobitly)
 	if err != nil {
 		log.Fatal(err)

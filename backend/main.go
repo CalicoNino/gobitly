@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gobitly/db"
 	"gobitly/server"
 
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,10 @@ import (
 
 func main() {
 	r := gin.Default()
+
+	// run db
+	db.Connect()
+
 	r.GET("/ping", server.GetGobitly)
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
