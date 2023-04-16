@@ -3,8 +3,10 @@ package controllers
 import (
 	"gobitly/db"
 	"gobitly/models"
+	"gobitly/utils"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -14,30 +16,35 @@ import (
 var validate = validator.New()
 
 func CreateGobitly(c *gin.Context) {
-	var gobitly models.Gobitly
+	var input models.GobitlyInput
 
-	if err := c.BindJSON(&gobitly); err != nil {
+	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, models.GobitlyResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
 		return
 	}
 
-	if validationErr := validate.Struct(&gobitly); validationErr != nil {
+	if validationErr := validate.Struct(&input); validationErr != nil {
 		c.JSON(http.StatusBadRequest, models.GobitlyResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": validationErr.Error()}})
 		return
 	}
 
-	_, err := url.ParseRequestURI(gobitly.Redirect)
+	_, err := url.ParseRequestURI(input.Url)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.GobitlyResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": "Invalid URL"}})
 		return
 	}
 
+	now := time.Now()
+	expiry := now.AddDate(0, 1, 0)
+	mongodbId := primitive.NewObjectID()
+
 	newGobitly := models.Gobitly{
-		ID:       primitive.NewObjectID(),
-		Redirect: gobitly.Redirect,
-		Gobitly:  gobitly.Gobitly,
-		Random:   gobitly.Random,
-		Clicked:  0,
+		ID:        mongodbId,
+		Redirect:  input.Url,
+		Gobitly:   utils.RandomURL(mongodbId.String(), input.Url, now.GoString()),
+		CreatedAt: time.Unix(now.Unix(), 0).String(),
+		ExpiredAt: time.Unix(expiry.Unix(), 0).String(),
+		Clicked:   0,
 	}
 
 	result, err := db.InsertGobitly(newGobitly)

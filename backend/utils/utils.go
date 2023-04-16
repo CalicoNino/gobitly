@@ -1,20 +1,14 @@
 package utils
 
-import "math/rand"
+import (
+	"crypto/sha1"
+	"encoding/base64"
+)
 
-var runes = []rune("0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM")
+func RandomURL(id string, url string, createdAt string) string {
+	data := []byte(id + url + createdAt)
 
-func RandomURL(size int) string {
-	str := make([]rune, size)
-	len := len(runes)
-
-	for i := range str {
-		str[i] = runes[rand.Intn(len)]
-	}
-
-	return string(str)
+	hasher := sha1.New()
+	hasher.Write(data)
+	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))[:5]
 }
-
-// func StringCompressor(s string) string {
-
-// }

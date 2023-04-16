@@ -86,12 +86,24 @@ func DeleteGobitly(gobitlyId string) (*mongo.DeleteResult, error) {
 }
 
 func GetGobitly(gobitlyId string) (*models.Gobitly, error) {
-	id, err := primitive.ObjectIDFromHex(gobitlyId)
 	var gobitly *models.Gobitly
+	filter := bson.M{"gobitly": gobitlyId}
+	update := bson.M{"$inc": bson.M{"clicked": 1}}
+
+	err = collection.FindOneAndUpdate(context.Background(), filter, update).Decode(&gobitly)
 	if err != nil {
 		return nil, err
 	}
 
+	return gobitly, nil
+}
+
+func GetGobitlyById(gobitlyId string) (*models.Gobitly, error) {
+	id, err := primitive.ObjectIDFromHex(gobitlyId)
+	if err != nil {
+		return nil, err
+	}
+	var gobitly *models.Gobitly
 	filter := bson.M{"_id": id}
 
 	err = collection.FindOne(context.Background(), filter).Decode(&gobitly)
